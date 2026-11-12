@@ -21,14 +21,23 @@ const Color _hitCurrent = Color(0xFFFFB300);
 
 /// Mức tô sáng của ô khi tìm kiếm.
 enum XlsxHighlight { none, match, current }
+
 const Color _gridLine = Color(0xFFD4D4D4);
 const Color _headerBg = Color(0xFFEFEFEF);
 
 class XlsxViewerPage extends StatefulWidget {
-  const XlsxViewerPage({super.key, required this.path, required this.workbook});
+  const XlsxViewerPage({
+    super.key,
+    required this.path,
+    required this.workbook,
+    this.truncated = false,
+  });
 
   final String path;
   final rd.XlsxWorkbook workbook;
+
+  /// File quá lớn nên chỉ đọc phần đầu (CSV).
+  final bool truncated;
 
   @override
   State<XlsxViewerPage> createState() => _XlsxViewerPageState();
@@ -176,6 +185,8 @@ class _XlsxViewerPageState extends State<XlsxViewerPage> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final cur = _hits.isEmpty ? null : _hits[_current];
+    // Chưa hỗ trợ CSV → PDF nên không hiện nút chuyển đổi với file .csv.
+    final isCsv = docTypeFromPath(widget.path) == DocType.csv;
     return Scaffold(
       appBar: OfficeViewerAppBar(
         category: DocCategory.xls,
@@ -196,12 +207,13 @@ class _XlsxViewerPageState extends State<XlsxViewerPage> {
             icon: const Icon(Symbols.zoom_in_rounded),
             onPressed: () => _setZoom(_zoom + 0.25),
           ),
-          IconButton(
-            tooltip: l.office_convertToPdf,
-            icon: const Icon(Symbols.picture_as_pdf_rounded),
-            onPressed: () =>
-                context.push(Routes.excelToPdf, extra: widget.path),
-          ),
+          if (!isCsv)
+            IconButton(
+              tooltip: l.office_convertToPdf,
+              icon: const Icon(Symbols.picture_as_pdf_rounded),
+              onPressed: () =>
+                  context.push(Routes.excelToPdf, extra: widget.path),
+            ),
         ],
       ),
       body: _sheets.isEmpty
@@ -222,6 +234,7 @@ class _XlsxViewerPageState extends State<XlsxViewerPage> {
                     onNext: () => _step(1),
                     onClose: _closeSearch,
                   ),
+                if (widget.truncated) OfficeNoticeBanner(l.office_truncated),
                 Expanded(
                   child: PinchZoom(
                     scale: _zoom,

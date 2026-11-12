@@ -8,6 +8,7 @@ import '../../../core/errors/app_error.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/doc_type.dart';
 import '../../../core/widgets/widgets.dart';
+import '../data/csv_reader.dart';
 import '../data/office_io.dart';
 import '../data/text_decoder.dart';
 import '../widgets/docx_view.dart';
@@ -22,15 +23,13 @@ final docxContentProvider = FutureProvider.autoDispose
     .family<rd.DocxDocument, String>((ref, path) => readDocxFile(path));
 
 final xlsxContentProvider = FutureProvider.autoDispose
-    .family<rd.XlsxWorkbook, String>((ref, path) => readXlsxFile(path));
+    .family<SpreadsheetContent, String>(
+      (ref, path) => readSpreadsheetFile(path),
+    );
 
 /// Khung chờ / lỗi chung của 3 màn xem: thanh tiêu đề màu theo loại file.
 class _LoadScaffold extends StatelessWidget {
-  const _LoadScaffold({
-    required this.path,
-    required this.category,
-    this.body,
-  });
+  const _LoadScaffold({required this.path, required this.category, this.body});
 
   final String path;
   final DocCategory category;
@@ -70,14 +69,15 @@ class TxtViewerScreen extends ConsumerWidget {
     final async = ref.watch(txtContentProvider(path));
     return async.when(
       data: (c) => TxtViewerPage(path: path, content: c),
-      loading: () => _LoadScaffold(
-        path: path,
-        category: DocCategory.txt,
-      ),
+      loading: () => _LoadScaffold(path: path, category: DocCategory.txt),
       error: (e, _) => _LoadScaffold(
         path: path,
         category: DocCategory.txt,
-        body: _error(context, e, () => ref.invalidate(txtContentProvider(path))),
+        body: _error(
+          context,
+          e,
+          () => ref.invalidate(txtContentProvider(path)),
+        ),
       ),
     );
   }
@@ -94,14 +94,15 @@ class DocxViewerScreen extends ConsumerWidget {
     final async = ref.watch(docxContentProvider(path));
     return async.when(
       data: (d) => DocxViewerPage(path: path, document: d),
-      loading: () => _LoadScaffold(
-        path: path,
-        category: DocCategory.doc,
-      ),
+      loading: () => _LoadScaffold(path: path, category: DocCategory.doc),
       error: (e, _) => _LoadScaffold(
         path: path,
         category: DocCategory.doc,
-        body: _error(context, e, () => ref.invalidate(docxContentProvider(path))),
+        body: _error(
+          context,
+          e,
+          () => ref.invalidate(docxContentProvider(path)),
+        ),
       ),
     );
   }
@@ -117,15 +118,20 @@ class XlsxViewerScreen extends ConsumerWidget {
     if (path == null) return const Scaffold(body: SizedBox.shrink());
     final async = ref.watch(xlsxContentProvider(path));
     return async.when(
-      data: (w) => XlsxViewerPage(path: path, workbook: w),
-      loading: () => _LoadScaffold(
+      data: (c) => XlsxViewerPage(
         path: path,
-        category: DocCategory.xls,
+        workbook: c.workbook,
+        truncated: c.truncated,
       ),
+      loading: () => _LoadScaffold(path: path, category: DocCategory.xls),
       error: (e, _) => _LoadScaffold(
         path: path,
         category: DocCategory.xls,
-        body: _error(context, e, () => ref.invalidate(xlsxContentProvider(path))),
+        body: _error(
+          context,
+          e,
+          () => ref.invalidate(xlsxContentProvider(path)),
+        ),
       ),
     );
   }

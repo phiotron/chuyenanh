@@ -1,7 +1,7 @@
 import 'package:path/path.dart' as p;
 
 /// Loại file theo đuôi (không phân biệt hoa thường).
-enum DocType { pdf, doc, docx, xls, xlsx, ppt, pptx, txt, image, other }
+enum DocType { pdf, doc, docx, xls, xlsx, csv, ppt, pptx, txt, image, other }
 
 /// Nhóm file cho tab trang chủ: All · PDF · DOC · XLS · PPT · TXT.
 enum DocCategory { pdf, doc, xls, ppt, txt }
@@ -38,6 +38,8 @@ DocType docTypeFromExtension(String ext) {
       return DocType.xls;
     case 'xlsx':
       return DocType.xlsx;
+    case 'csv':
+      return DocType.csv;
     case 'ppt':
       return DocType.ppt;
     case 'pptx':
@@ -54,7 +56,7 @@ extension DocTypeX on DocType {
   DocCategory? get category => switch (this) {
     DocType.pdf => DocCategory.pdf,
     DocType.doc || DocType.docx => DocCategory.doc,
-    DocType.xls || DocType.xlsx => DocCategory.xls,
+    DocType.xls || DocType.xlsx || DocType.csv => DocCategory.xls,
     DocType.ppt || DocType.pptx => DocCategory.ppt,
     DocType.txt => DocCategory.txt,
     DocType.image || DocType.other => null,
@@ -69,6 +71,7 @@ extension DocTypeX on DocType {
     DocType.pdf => 'PDF',
     DocType.doc || DocType.docx => 'DOC',
     DocType.xls || DocType.xlsx => 'XLS',
+    DocType.csv => 'CSV',
     DocType.ppt || DocType.pptx => 'PPT',
     DocType.txt => 'TXT',
     DocType.image => 'IMG',
@@ -83,6 +86,7 @@ const Set<String> documentExtensions = {
   'docx',
   'xls',
   'xlsx',
+  'csv',
   'ppt',
   'pptx',
   'txt',

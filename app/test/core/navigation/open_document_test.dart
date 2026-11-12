@@ -7,6 +7,7 @@ void main() {
     expect(routeForDocument('/a/x.pdf'), Routes.pdfReader);
     expect(routeForDocument('/a/x.DOCX'), Routes.docxViewer);
     expect(routeForDocument('/a/x.xlsx'), Routes.xlsxViewer);
+    expect(routeForDocument('/a/x.CSV'), Routes.xlsxViewer);
     expect(routeForDocument('/a/x.pptx'), Routes.pptxViewer);
     expect(routeForDocument('/a/x.txt'), Routes.txtViewer);
     expect(routeForDocument('/a/x.doc'), isNull);

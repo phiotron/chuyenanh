@@ -17,7 +17,14 @@ import '../logic/search_text.dart';
 const int maxIndexedFileBytes = 50 * 1024 * 1024;
 
 /// Đuôi file trích được chữ. `.doc/.xls/.ppt` đời cũ không đọc được → bỏ.
-const Set<String> indexableExtensions = {'pdf', 'docx', 'xlsx', 'pptx', 'txt'};
+const Set<String> indexableExtensions = {
+  'pdf',
+  'docx',
+  'xlsx',
+  'csv',
+  'pptx',
+  'txt',
+};
 
 /// TXT: chỉ đọc phần đầu, đủ cho [maxContentChars] ký tự kể cả mã 2–4 byte/ký tự.
 const int _maxTxtBytes = 4 * maxContentChars;
@@ -36,7 +43,7 @@ String extractRawText(String path, String ext) {
       return xlsxPlainText(office.readXlsx(File(path).readAsBytesSync()));
     case 'pptx':
       return pptxPlainText(pptx.readPptx(File(path).readAsBytesSync()));
-    case 'txt':
+    case 'txt' || 'csv':
       final raf = File(path).openSync();
       try {
         final length = raf.lengthSync();

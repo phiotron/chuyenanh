@@ -25,7 +25,7 @@ abstract final class AppColors {
   static Color forDocType(DocType type) => switch (type) {
     DocType.pdf => pdf,
     DocType.doc || DocType.docx => doc,
-    DocType.xls || DocType.xlsx => xls,
+    DocType.xls || DocType.xlsx || DocType.csv => xls,
     DocType.ppt || DocType.pptx => ppt,
     DocType.txt => txt,
     DocType.image => image,

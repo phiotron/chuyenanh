@@ -147,8 +147,7 @@ class _TxtViewerPageState extends ConsumerState<TxtViewerPage> {
           IconButton(
             tooltip: l.office_convertToPdf,
             icon: const Icon(Symbols.picture_as_pdf_rounded),
-            onPressed: () =>
-                context.push(Routes.textToPdf, extra: widget.path),
+            onPressed: () => context.push(Routes.textToPdf, extra: widget.path),
           ),
         ],
       ),
@@ -171,7 +170,7 @@ class _TxtViewerPageState extends ConsumerState<TxtViewerPage> {
                 _hits = const [];
               }),
             ),
-          if (widget.content.truncated) _NoticeBanner(l.office_truncated),
+          if (widget.content.truncated) OfficeNoticeBanner(l.office_truncated),
           Expanded(
             child: _loading
                 ? Center(
@@ -180,29 +179,29 @@ class _TxtViewerPageState extends ConsumerState<TxtViewerPage> {
                     ),
                   )
                 : PinchZoom(
-              scale: fontSize / 16,
-              min: 10 / 16,
-              max: 40 / 16,
-              onScaleChanged: (s) => notifier.set(16 * s),
-              child: SelectionArea(
-                child: ListView.builder(
-                  controller: _scroller.controller,
-                  padding: const EdgeInsets.all(12),
-                  itemCount: _lines.length,
-                  itemBuilder: (context, i) => KeyedSubtree(
-                    key: _scroller.keyFor(i),
-                    child: _Line(
-                      text: _lines[i],
-                      query: _searching ? query : '',
-                      currentStart: curHit != null && curHit.block == i
-                          ? curHit.start
-                          : null,
-                      style: TextStyle(fontSize: fontSize, height: 1.4),
+                    scale: fontSize / 16,
+                    min: 10 / 16,
+                    max: 40 / 16,
+                    onScaleChanged: (s) => notifier.set(16 * s),
+                    child: SelectionArea(
+                      child: ListView.builder(
+                        controller: _scroller.controller,
+                        padding: const EdgeInsets.all(12),
+                        itemCount: _lines.length,
+                        itemBuilder: (context, i) => KeyedSubtree(
+                          key: _scroller.keyFor(i),
+                          child: _Line(
+                            text: _lines[i],
+                            query: _searching ? query : '',
+                            currentStart: curHit != null && curHit.block == i
+                                ? curHit.start
+                                : null,
+                            style: TextStyle(fontSize: fontSize, height: 1.4),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
           ),
           OfficeBottomBar(
             child: Container(
@@ -217,43 +216,6 @@ class _TxtViewerPageState extends ConsumerState<TxtViewerPage> {
                   fontWeight: FontWeight.w500,
                   color: t.textMuted,
                 ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Băng báo dưới thanh tiêu đề (vd. "File lớn, chỉ hiển thị phần đầu."):
-/// nền `surface`, kẻ dưới `line`, icon thông tin + chữ 13.
-class _NoticeBanner extends StatelessWidget {
-  const _NoticeBanner(this.text);
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.tokens;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: t.surface,
-        border: Border(bottom: BorderSide(color: t.line)),
-      ),
-      child: Row(
-        children: [
-          Icon(Symbols.info_rounded, size: 18, color: t.textMuted),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                height: 1.4,
-                color: t.text,
               ),
             ),
           ),

@@ -5,6 +5,8 @@ import 'dart:typed_data';
 import 'package:office_reader/office_reader.dart' as rd;
 
 import '../../../core/errors/app_error.dart';
+import '../../../core/utils/doc_type.dart';
+import 'csv_reader.dart';
 
 /// Chạy [body] trong isolate; mọi lỗi được đổi thành [AppError] ngay trong isolate
 /// (để chắc chắn gửi về được).
@@ -46,3 +48,11 @@ Future<rd.XlsxWorkbook> readXlsxFile(String path) =>
 
 Future<rd.XlsxWorkbook> readXlsxBytes(Uint8List bytes) =>
     runParsing(() => rd.readXlsx(bytes));
+
+/// Đọc bảng từ `.xlsx` hoặc `.csv` (trình xem XLSX dùng chung).
+Future<SpreadsheetContent> readSpreadsheetFile(String path) =>
+    extensionOf(path) == 'csv'
+    ? runParsing(() => readCsvFileSync(path))
+    : runParsing(
+        () => SpreadsheetContent(rd.readXlsx(File(path).readAsBytesSync())),
+      );

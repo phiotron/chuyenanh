@@ -9,6 +9,7 @@ void main() {
       expect(docTypeFromPath('x.doc'), DocType.doc);
       expect(docTypeFromPath('x.XLSX'), DocType.xlsx);
       expect(docTypeFromPath('x.xls'), DocType.xls);
+      expect(docTypeFromPath('x.CSV'), DocType.csv);
       expect(docTypeFromPath('x.pptx'), DocType.pptx);
       expect(docTypeFromPath('x.ppt'), DocType.ppt);
       expect(docTypeFromPath('notes.txt'), DocType.txt);
@@ -36,6 +37,7 @@ void main() {
       expect(DocType.docx.category, DocCategory.doc);
       expect(DocType.xls.category, DocCategory.xls);
       expect(DocType.xlsx.category, DocCategory.xls);
+      expect(DocType.csv.category, DocCategory.xls);
       expect(DocType.ppt.category, DocCategory.ppt);
       expect(DocType.pptx.category, DocCategory.ppt);
       expect(DocType.txt.category, DocCategory.txt);
@@ -55,6 +57,11 @@ void main() {
       expect(DocType.pdf.label, 'PDF');
       expect(DocType.docx.label, 'DOC');
       expect(DocType.xlsx.label, 'XLS');
+      expect(DocType.csv.label, 'CSV');
+    });
+
+    test('csv nằm trong danh sách đuôi quét', () {
+      expect(documentExtensions, contains('csv'));
     });
   });
 }

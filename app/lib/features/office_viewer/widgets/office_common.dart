@@ -10,6 +10,44 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/doc_type.dart';
 import '../../../core/widgets/app_search_field.dart';
 
+/// Băng báo dưới thanh tiêu đề (vd. "File lớn, chỉ hiển thị phần đầu."):
+/// nền `surface`, kẻ dưới `line`, icon thông tin + chữ 13.
+class OfficeNoticeBanner extends StatelessWidget {
+  const OfficeNoticeBanner(this.text, {super.key});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: t.surface,
+        border: Border(bottom: BorderSide(color: t.line)),
+      ),
+      child: Row(
+        children: [
+          Icon(Symbols.info_rounded, size: 18, color: t.textMuted),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                height: 1.4,
+                color: t.text,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Màu thanh tiêu đề trình xem theo loại file (bản đậm, `design-mobile/README.md` §1.2):
 /// DOC `#1565C0` · XLS `#2E7D32` · PPT `#D84315` · TXT `#546E7A`; chữ/icon trắng.
 Color officeHeaderColor(DocCategory category) =>
@@ -18,7 +56,8 @@ Color officeHeaderColor(DocCategory category) =>
 /// Thanh tiêu đề chung của các trình xem Office/TXT: nền màu theo loại file, chữ/icon trắng.
 ///
 /// Theme AppBar mặc định là nền sáng nên đặt rõ nền, chữ, icon và thanh trạng thái sáng.
-class OfficeViewerAppBar extends StatelessWidget implements PreferredSizeWidget {
+class OfficeViewerAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
   const OfficeViewerAppBar({
     super.key,
     required this.category,

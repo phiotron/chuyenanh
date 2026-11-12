@@ -20,13 +20,13 @@ export 'open_file_args.dart';
 String? routeForDocument(String path) => switch (docTypeFromPath(path)) {
   DocType.pdf => Routes.pdfReader,
   DocType.docx => Routes.docxViewer,
-  DocType.xlsx => Routes.xlsxViewer,
+  DocType.xlsx || DocType.csv => Routes.xlsxViewer,
   DocType.pptx => Routes.pptxViewer,
   DocType.txt => Routes.txtViewer,
   _ => null,
 };
 
-/// Mở file theo loại: pdf → reader, docx/xlsx/pptx/txt → viewer tương ứng,
+/// Mở file theo loại: pdf → reader, docx/xlsx/csv/pptx/txt → viewer tương ứng,
 /// doc/xls/ppt → app ngoài (`open_filex`, chép vào cache trước). Ghi vào bảng `recents`.
 ///
 /// Ném [UnsupportedFormat] nếu loại không hỗ trợ / không có app ngoài mở được,
