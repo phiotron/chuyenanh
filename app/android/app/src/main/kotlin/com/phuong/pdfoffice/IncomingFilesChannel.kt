@@ -49,7 +49,7 @@ class IncomingFilesChannel(
 
         /** Khớp `documentExtensions` + `imageExtensions` (lib/core/utils/doc_type.dart). */
         private val ALLOWED_EXTENSIONS = setOf(
-            "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt",
+            "pdf", "doc", "docx", "xls", "xlsx", "csv", "ppt", "pptx", "txt",
             "jpg", "jpeg", "png", "webp", "heic", "heif", "bmp", "gif",
         )
 
@@ -63,6 +63,10 @@ class IncomingFilesChannel(
             "application/vnd.ms-powerpoint" to "ppt",
             "application/vnd.openxmlformats-officedocument.presentationml.presentation" to "pptx",
             "text/plain" to "txt",
+            // CSV: nhieu app gui mot trong ba mime duoi day.
+            "text/csv" to "csv",
+            "text/comma-separated-values" to "csv",
+            "application/csv" to "csv",
             "image/jpeg" to "jpg",
             "image/png" to "png",
             "image/webp" to "webp",

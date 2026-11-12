@@ -78,6 +78,9 @@
                 <data android:mimeType="application/vnd.ms-excel" />
                 <data android:mimeType="application/vnd.ms-powerpoint" />
                 <data android:mimeType="text/plain" />
+                <data android:mimeType="text/csv" />
+                <data android:mimeType="text/comma-separated-values" />
+                <data android:mimeType="application/csv" />
                 <data android:mimeType="image/*" />
             </intent-filter>
 
@@ -93,6 +96,9 @@
                 <data android:mimeType="application/vnd.ms-excel" />
                 <data android:mimeType="application/vnd.ms-powerpoint" />
                 <data android:mimeType="text/plain" />
+                <data android:mimeType="text/csv" />
+                <data android:mimeType="text/comma-separated-values" />
+                <data android:mimeType="application/csv" />
                 <data android:mimeType="image/*" />
             </intent-filter>
 
