@@ -17,18 +17,21 @@ import '../../core/utils/output_directory.dart';
 import '../../core/widgets/widgets.dart';
 import '../../data/settings/settings_providers.dart';
 import '../../engines/convert/convert_engine.dart';
+import '../office_viewer/data/office_io.dart';
 import 'convert_providers.dart';
 import 'engine/pdf_convert_engine.dart' show isNoTextError;
 import 'text/text_decoder.dart';
 
-/// Sáu kiểu chuyển đổi của feature (mỗi kiểu một route).
+/// Tám kiểu chuyển đổi của feature (mỗi kiểu một route).
 enum ConvertMode {
   textToPdf(['txt'], 'pdf'),
   wordToPdf(['docx'], 'pdf'),
   excelToPdf(['xlsx'], 'pdf'),
+  csvToPdf(['csv'], 'pdf'),
   pdfToText(['pdf'], 'txt'),
   pdfToWord(['pdf'], 'docx'),
-  pdfToExcel(['pdf'], 'xlsx');
+  pdfToExcel(['pdf'], 'xlsx'),
+  pdfToCsv(['pdf'], 'csv');
 
   const ConvertMode(this.inputExtensions, this.outputExtension);
   final List<String> inputExtensions;
@@ -37,8 +40,9 @@ enum ConvertMode {
   bool get toPdf => outputExtension == 'pdf';
   bool get fromPdf => inputExtensions.single == 'pdf';
 
-  /// PDF → Word/Excel: cảnh báo không giữ bố cục.
-  bool get rebuildsLayout => this == pdfToWord || this == pdfToExcel;
+  /// PDF → Word/Excel/CSV: cảnh báo không giữ bố cục.
+  bool get rebuildsLayout =>
+      this == pdfToWord || this == pdfToExcel || this == pdfToCsv;
 }
 
 String _modeTitle(BuildContext context, ConvertMode mode) {
@@ -47,9 +51,11 @@ String _modeTitle(BuildContext context, ConvertMode mode) {
     ConvertMode.textToPdf => l.conv_textToPdf,
     ConvertMode.wordToPdf => l.conv_wordToPdf,
     ConvertMode.excelToPdf => l.conv_excelToPdf,
+    ConvertMode.csvToPdf => l.conv_csvToPdf,
     ConvertMode.pdfToText => l.conv_pdfToText,
     ConvertMode.pdfToWord => l.conv_pdfToWord,
     ConvertMode.pdfToExcel => l.conv_pdfToExcel,
+    ConvertMode.pdfToCsv => l.conv_pdfToCsv,
   };
 }
 
@@ -211,7 +217,7 @@ class _ConvertScreenState extends ConsumerState<ConvertScreen> {
     String out,
     String? password,
     ProgressDialogController progress,
-  ) {
+  ) async {
     void onProgress(double v) => progress.update(v);
     final token = progress.cancelToken;
     switch (mode) {
@@ -224,6 +230,18 @@ class _ConvertScreenState extends ConsumerState<ConvertScreen> {
       case ConvertMode.excelToPdf:
         return engine.xlsxToPdf(_inputPath!, out,
             options: _options, onProgress: onProgress, cancelToken: token);
+      case ConvertMode.csvToPdf:
+        // CSV được đọc bằng đúng trình đọc của màn xem bảng (tự nhận dấu phân cách,
+        // bảng mã), rồi vẽ PDF như một bảng Excel.
+        final content = await readSpreadsheetFile(_inputPath!);
+        if (content.truncated && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.office_truncated)),
+          );
+        }
+        token.throwIfCancelled();
+        return engine.tableToPdf(content.workbook, out,
+            options: _options, onProgress: onProgress, cancelToken: token);
       case ConvertMode.pdfToText:
         return engine.pdfToText(_inputPath!, out,
             password: password, onProgress: onProgress, cancelToken: token);
@@ -232,6 +250,9 @@ class _ConvertScreenState extends ConsumerState<ConvertScreen> {
             password: password, onProgress: onProgress, cancelToken: token);
       case ConvertMode.pdfToExcel:
         return engine.pdfToXlsx(_inputPath!, out,
+            password: password, onProgress: onProgress, cancelToken: token);
+      case ConvertMode.pdfToCsv:
+        return engine.pdfToCsv(_inputPath!, out,
             password: password, onProgress: onProgress, cancelToken: token);
     }
   }

@@ -1,3 +1,5 @@
+import 'package:office_reader/office_reader.dart' show XlsxWorkbook;
+
 import '../../core/utils/cancel_token.dart';
 import '../../core/utils/page_size.dart';
 
@@ -61,6 +63,15 @@ abstract interface class ConvertEngine {
     CancelToken? cancelToken,
   });
 
+  /// Bảng đã đọc sẵn (XLSX hoặc CSV) → PDF, cùng cách vẽ với [xlsxToPdf].
+  Future<String> tableToPdf(
+    XlsxWorkbook workbook,
+    String outputPath, {
+    ToPdfOptions options = const ToPdfOptions(),
+    ProgressCallback? onProgress,
+    CancelToken? cancelToken,
+  });
+
   /// PDF → .txt (UTF-8), trang cách nhau bằng dòng trống.
   Future<String> pdfToText(
     String inputPath,
@@ -81,6 +92,15 @@ abstract interface class ConvertEngine {
 
   /// PDF → .xlsx (đoán bảng theo toạ độ chữ). Không giữ bố cục gốc.
   Future<String> pdfToXlsx(
+    String inputPath,
+    String outputPath, {
+    String? password,
+    ProgressCallback? onProgress,
+    CancelToken? cancelToken,
+  });
+
+  /// PDF → .csv (cùng cách đoán bảng với [pdfToXlsx], ghi UTF-8 BOM cho Excel).
+  Future<String> pdfToCsv(
     String inputPath,
     String outputPath, {
     String? password,

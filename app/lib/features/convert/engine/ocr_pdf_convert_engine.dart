@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:office_reader/office_reader.dart' as office;
 import 'package:pdf_layout/pdf_layout.dart' show LayoutPage;
 
 import '../../../engines/convert/convert_engine.dart';
@@ -124,6 +125,11 @@ class OcrPdfConvertEngine implements ConvertEngine {
           {String? password, ProgressCallback? onProgress, CancelToken? cancelToken}) =>
       _pdfTo(PdfTextTarget.xlsx, inputPath, outputPath, password, onProgress, cancelToken);
 
+  @override
+  Future<String> pdfToCsv(String inputPath, String outputPath,
+          {String? password, ProgressCallback? onProgress, CancelToken? cancelToken}) =>
+      _pdfTo(PdfTextTarget.csv, inputPath, outputPath, password, onProgress, cancelToken);
+
   // ---- Chiều → PDF: không cần OCR.
 
   @override
@@ -156,5 +162,13 @@ class OcrPdfConvertEngine implements ConvertEngine {
           ProgressCallback? onProgress,
           CancelToken? cancelToken}) =>
       inner.xlsxToPdf(inputPath, outputPath,
+          options: options, onProgress: onProgress, cancelToken: cancelToken);
+
+  @override
+  Future<String> tableToPdf(office.XlsxWorkbook workbook, String outputPath,
+          {ToPdfOptions options = const ToPdfOptions(),
+          ProgressCallback? onProgress,
+          CancelToken? cancelToken}) =>
+      inner.tableToPdf(workbook, outputPath,
           options: options, onProgress: onProgress, cancelToken: cancelToken);
 }

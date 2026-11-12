@@ -27,6 +27,9 @@ enum ToolInputType {
   /// Một XLSX, route nhận `String?`.
   excel,
 
+  /// Một CSV, route nhận `String?`.
+  csv,
+
   /// Chữ gõ hoặc TXT, route nhận `String?`.
   text,
 
@@ -134,6 +137,14 @@ const List<ToolSpec> allTools = [
     inputType: ToolInputType.excel,
   ),
   ToolSpec(
+    id: 'csvToPdf',
+    route: Routes.csvToPdf,
+    icon: Symbols.table_view_rounded,
+    labelKey: 'core_toolCsvToPdf',
+    group: ToolGroup.convert,
+    inputType: ToolInputType.csv,
+  ),
+  ToolSpec(
     id: 'pdfToImage',
     route: Routes.pdfToImage,
     icon: Symbols.imagesmode_rounded,
@@ -162,6 +173,14 @@ const List<ToolSpec> allTools = [
     route: Routes.pdfToExcel,
     icon: Symbols.grid_on_rounded,
     labelKey: 'core_toolPdfToExcel',
+    group: ToolGroup.convert,
+    inputType: ToolInputType.pdf,
+  ),
+  ToolSpec(
+    id: 'pdfToCsv',
+    route: Routes.pdfToCsv,
+    icon: Symbols.table_rows_rounded,
+    labelKey: 'core_toolPdfToCsv',
     group: ToolGroup.convert,
     inputType: ToolInputType.pdf,
   ),
@@ -293,10 +312,12 @@ String toolLabelFor(AppLocalizations l, String labelKey) => switch (labelKey) {
   'core_toolCreateBlank' => l.core_toolCreateBlank,
   'core_toolWordToPdf' => l.core_toolWordToPdf,
   'core_toolExcelToPdf' => l.core_toolExcelToPdf,
+  'core_toolCsvToPdf' => l.core_toolCsvToPdf,
   'core_toolPdfToImage' => l.core_toolPdfToImage,
   'core_toolPdfToText' => l.core_toolPdfToText,
   'core_toolPdfToWord' => l.core_toolPdfToWord,
   'core_toolPdfToExcel' => l.core_toolPdfToExcel,
+  'core_toolPdfToCsv' => l.core_toolPdfToCsv,
   'core_toolMerge' => l.core_toolMerge,
   'core_toolSplit' => l.core_toolSplit,
   'core_toolOrganize' => l.core_toolOrganize,

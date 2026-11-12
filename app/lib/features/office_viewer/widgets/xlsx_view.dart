@@ -189,7 +189,7 @@ class _XlsxViewerPageState extends State<XlsxViewerPage> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final cur = _hits.isEmpty ? null : _hits[_current];
-    // Chưa hỗ trợ CSV → PDF nên không hiện nút chuyển đổi với file .csv.
+    // CSV đi qua màn "CSV sang PDF" (đọc bảng rồi vẽ như Excel); XLSX giữ đường cũ.
     final isCsv = docTypeFromPath(widget.path) == DocType.csv;
     return Scaffold(
       appBar: OfficeViewerAppBar(
@@ -211,13 +211,14 @@ class _XlsxViewerPageState extends State<XlsxViewerPage> {
             icon: const Icon(Symbols.zoom_in_rounded),
             onPressed: () => _setZoom(_zoom + 0.25),
           ),
-          if (!isCsv)
-            IconButton(
-              tooltip: l.office_convertToPdf,
-              icon: const Icon(Symbols.picture_as_pdf_rounded),
-              onPressed: () =>
-                  context.push(Routes.excelToPdf, extra: widget.path),
+          IconButton(
+            tooltip: l.office_convertToPdf,
+            icon: const Icon(Symbols.picture_as_pdf_rounded),
+            onPressed: () => context.push(
+              isCsv ? Routes.csvToPdf : Routes.excelToPdf,
+              extra: widget.path,
             ),
+          ),
         ],
       ),
       body: _sheets.isEmpty

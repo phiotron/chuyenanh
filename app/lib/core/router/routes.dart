@@ -40,9 +40,11 @@ abstract final class Routes {
   static const textToPdf = '/convert/text-to-pdf';
   static const wordToPdf = '/convert/word-to-pdf';
   static const excelToPdf = '/convert/excel-to-pdf';
+  static const csvToPdf = '/convert/csv-to-pdf';
   static const pdfToText = '/convert/pdf-to-text';
   static const pdfToWord = '/convert/pdf-to-word';
   static const pdfToExcel = '/convert/pdf-to-excel';
+  static const pdfToCsv = '/convert/pdf-to-csv';
 
   // --- ppt_convert — `extra: String?` (path đầu vào, null = chọn file) ---
   static const pptToPdf = '/convert/ppt-to-pdf';

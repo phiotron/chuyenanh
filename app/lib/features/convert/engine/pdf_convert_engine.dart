@@ -3,13 +3,14 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:office_reader/office_reader.dart' as office;
-import 'package:pdf_layout/pdf_layout.dart' show LayoutPage;
+import 'package:pdf_layout/pdf_layout.dart' show LayoutPage, detectSheets;
 
 import '../../../core/errors/app_error.dart';
 import '../../../core/utils/file_paths.dart';
 import '../../../engines/convert/convert_engine.dart';
 import '../text/text_decoder.dart';
 import 'background.dart';
+import 'csv_builder.dart';
 import 'font_set.dart';
 import 'pdf_builders.dart';
 import 'pdf_extract.dart';
@@ -17,8 +18,8 @@ import 'pdf_extract.dart';
 /// Thiếu chữ để chuyển (PDF quét ảnh…) — bọc trong [Unknown] để UI nhận ra.
 bool isNoTextError(Object e) => e is Unknown && e.cause is NoTextFoundException;
 
-/// Định dạng đầu ra của PDF → văn bản.
-enum PdfTextTarget { text, docx, xlsx }
+/// Định dạng đầu ra của PDF → văn bản / bảng.
+enum PdfTextTarget { text, docx, xlsx, csv }
 
 /// [ConvertEngine] dùng Syncfusion PDF/XlsIO + `office_reader` + `pdf_layout`.
 ///
@@ -151,14 +152,26 @@ class PdfConvertEngine implements ConvertEngine {
       }
     }, null, cancelToken);
     onProgress?.call(0.15);
+    return tableToPdf(wb, outputPath,
+        options: options, onProgress: (p) => onProgress?.call(0.15 + p * 0.85), cancelToken: cancelToken);
+  }
+
+  @override
+  Future<String> tableToPdf(
+    office.XlsxWorkbook wb,
+    String outputPath, {
+    ToPdfOptions options = const ToPdfOptions(),
+    ProgressCallback? onProgress,
+    CancelToken? cancelToken,
+  }) async {
     final fonts = await _fonts(xlsxPlainText(wb));
     final fontBytes = fonts.bytes;
     final bytes = await _run<Uint8List>(
-      (report) => buildXlsxPdf(wb, options, PdfFontSet(fontBytes),
-          report: (p) => report(0.15 + p * 0.85)).bytes,
+      (report) => buildXlsxPdf(wb, options, PdfFontSet(fontBytes), report: report).bytes,
       onProgress,
       cancelToken,
     );
+    onProgress?.call(1);
     return _save(outputPath, bytes);
   }
 
@@ -194,6 +207,7 @@ class PdfConvertEngine implements ConvertEngine {
         PdfTextTarget.text => Uint8List.fromList(utf8.encode(layoutPagesToText(pages))),
         PdfTextTarget.docx => layoutPagesToDocx(pages),
         PdfTextTarget.xlsx => layoutPagesToXlsx(pages).bytes,
+        PdfTextTarget.csv => csvBytes(csvFromSheets(detectSheets(pages))),
       },
       onProgress,
       cancelToken,
@@ -254,6 +268,25 @@ class PdfConvertEngine implements ConvertEngine {
       final pages = extractLayoutPages(raw, password: password, report: report);
       final ok = hasAnyText(pages);
       return (ok ? layoutPagesToXlsx(pages).bytes : Uint8List(0), ok);
+    }, onProgress, cancelToken);
+    if (!result.$2) throw const Unknown(NoTextFoundException());
+    onProgress?.call(1);
+    return _save(outputPath, result.$1);
+  }
+
+  @override
+  Future<String> pdfToCsv(
+    String inputPath,
+    String outputPath, {
+    String? password,
+    ProgressCallback? onProgress,
+    CancelToken? cancelToken,
+  }) async {
+    final raw = await _readInput(inputPath);
+    final result = await _run<(Uint8List, bool)>((report) {
+      final pages = extractLayoutPages(raw, password: password, report: report);
+      final ok = hasAnyText(pages);
+      return (ok ? csvBytes(csvFromSheets(detectSheets(pages))) : Uint8List(0), ok);
     }, onProgress, cancelToken);
     if (!result.$2) throw const Unknown(NoTextFoundException());
     onProgress?.call(1);
