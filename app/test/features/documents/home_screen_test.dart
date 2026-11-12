@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pdf_office/core/l10n/l10n.dart';
 import 'package:pdf_office/core/theme/app_theme.dart';
+import 'package:pdf_office/core/utils/doc_type.dart';
 import 'package:pdf_office/data/db/app_database.dart';
 import 'package:pdf_office/data/settings/settings_providers.dart';
 import 'package:pdf_office/features/documents/documents_logic.dart';
@@ -72,16 +73,16 @@ Color _headerColor(WidgetTester tester) {
   return (header.decoration! as BoxDecoration).color!;
 }
 
-/// "Viên" tab thứ [index] (0 = All … 5 = TXT).
+/// "Viên" tab thứ [index] (0 = All … 6 = TXT).
 Finder _tab(int index) => find.byKey(ValueKey('files-tab-$index'));
 
 void main() {
-  testWidgets('hiện tab All/PDF/DOC/XLS/PPT/TXT và danh sách tài liệu', (
+  testWidgets('hiện tab All/PDF/DOC/XLS/CSV/PPT/TXT và danh sách tài liệu', (
     tester,
   ) async {
     await _pump(tester, docs: [_doc('a.pdf'), _doc('b.docx')]);
 
-    final labels = ['All', 'PDF', 'DOC', 'XLS', 'PPT', 'TXT'];
+    final labels = ['All', 'PDF', 'DOC', 'XLS', 'CSV', 'PPT', 'TXT'];
     for (var i = 0; i < labels.length; i++) {
       expect(
         find.descendant(of: _tab(i), matching: find.text(labels[i])),
@@ -119,6 +120,29 @@ void main() {
 
     expect(find.text('b.docx'), findsNothing);
     expect(find.text('a.pdf'), findsOneWidget);
+  });
+
+  testWidgets('tab CSV lọc riêng và tiêu đề màu vàng', (tester) async {
+    await _pump(tester, docs: [_doc('a.pdf'), _doc('b.csv')]);
+
+    await tester.tap(_tab(4)); // CSV
+    await tester.pumpAndSettle();
+
+    expect(find.text('b.csv'), findsOneWidget);
+    expect(find.text('a.pdf'), findsNothing);
+    expect(_headerColor(tester), AppColors.headerForCategory(DocCategory.csv));
+  });
+
+  testWidgets('bấm ô CSV trong lưới loại file chuyển sang tab CSV', (
+    tester,
+  ) async {
+    await _pump(tester, docs: [_doc('a.pdf'), _doc('b.csv')]);
+
+    await tester.tap(find.byKey(const ValueKey('grid-csv')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('b.csv'), findsOneWidget);
+    expect(find.text('a.pdf'), findsNothing);
   });
 
   testWidgets('trống + chưa có quyền → màn xin quyền và nút chọn file', (

@@ -37,7 +37,7 @@ void main() {
       expect(DocType.docx.category, DocCategory.doc);
       expect(DocType.xls.category, DocCategory.xls);
       expect(DocType.xlsx.category, DocCategory.xls);
-      expect(DocType.csv.category, DocCategory.xls);
+      expect(DocType.csv.category, DocCategory.csv);
       expect(DocType.ppt.category, DocCategory.ppt);
       expect(DocType.pptx.category, DocCategory.ppt);
       expect(DocType.txt.category, DocCategory.txt);

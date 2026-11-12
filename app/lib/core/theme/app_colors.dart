@@ -16,6 +16,7 @@ abstract final class AppColors {
   static const Color pdf = Color(0xFFE53935);
   static const Color doc = Color(0xFF1E88E5);
   static const Color xls = Color(0xFF43A047);
+  static const Color csv = Color(0xFFF9A825);
   static const Color ppt = Color(0xFFF4511E);
   static const Color txt = Color(0xFF78909C);
   static const Color image = Color(0xFF8E24AA);
@@ -25,7 +26,8 @@ abstract final class AppColors {
   static Color forDocType(DocType type) => switch (type) {
     DocType.pdf => pdf,
     DocType.doc || DocType.docx => doc,
-    DocType.xls || DocType.xlsx || DocType.csv => xls,
+    DocType.xls || DocType.xlsx => xls,
+    DocType.csv => csv,
     DocType.ppt || DocType.pptx => ppt,
     DocType.txt => txt,
     DocType.image => image,
@@ -42,6 +44,8 @@ abstract final class AppColors {
     DocCategory.pdf => const Color(0xFFD32F2F),
     DocCategory.doc => const Color(0xFF1565C0),
     DocCategory.xls => const Color(0xFF2E7D32),
+    // Vàng đậm: đủ tương phản với chữ trắng trên thanh tiêu đề.
+    DocCategory.csv => const Color(0xFF8D6E00),
     DocCategory.ppt => const Color(0xFFD84315),
     DocCategory.txt => const Color(0xFF546E7A),
   };
@@ -52,6 +56,7 @@ abstract final class AppColors {
     DocCategory.pdf => pdf,
     DocCategory.doc => doc,
     DocCategory.xls => xls,
+    DocCategory.csv => csv,
     DocCategory.ppt => ppt,
     DocCategory.txt => txt,
   };

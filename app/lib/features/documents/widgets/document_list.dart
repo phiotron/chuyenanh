@@ -161,6 +161,7 @@ class DocumentList extends ConsumerWidget {
     DocCategory.pdf => DocType.pdf,
     DocCategory.doc => DocType.docx,
     DocCategory.xls => DocType.xlsx,
+    DocCategory.csv => DocType.csv,
     DocCategory.ppt => DocType.pptx,
     DocCategory.txt => DocType.txt,
   };
@@ -489,8 +490,8 @@ class _SkeletonBlock extends StatelessWidget {
   }
 }
 
-/// Lưới loại file ở đầu tab Tất cả: PDF · DOC · XLS · PPT · TXT · Khác.
-/// Điện thoại: 6 ô trong một khối bo 20; máy tính bảng: 6 thẻ rời có viền.
+/// Lưới loại file ở đầu tab Tất cả: PDF · DOC · XLS · CSV · PPT · TXT · Khác.
+/// Điện thoại: 7 ô trong một khối bo 20; máy tính bảng: 7 thẻ rời có viền.
 class CategoryGrid extends StatelessWidget {
   const CategoryGrid({super.key, required this.onPick});
 
@@ -506,6 +507,7 @@ class CategoryGrid extends StatelessWidget {
       (DocType.pdf, 'PDF', () => onPick(DocCategory.pdf), 'grid-pdf'),
       (DocType.docx, 'DOC', () => onPick(DocCategory.doc), 'grid-doc'),
       (DocType.xlsx, 'XLS', () => onPick(DocCategory.xls), 'grid-xls'),
+      (DocType.csv, 'CSV', () => onPick(DocCategory.csv), 'grid-csv'),
       (DocType.pptx, 'PPT', () => onPick(DocCategory.ppt), 'grid-ppt'),
       (DocType.txt, 'TXT', () => onPick(DocCategory.txt), 'grid-txt'),
       (

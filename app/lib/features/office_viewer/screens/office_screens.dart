@@ -116,6 +116,7 @@ class XlsxViewerScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final path = this.path;
     if (path == null) return const Scaffold(body: SizedBox.shrink());
+    final category = docTypeFromPath(path).category ?? DocCategory.xls;
     final async = ref.watch(xlsxContentProvider(path));
     return async.when(
       data: (c) => XlsxViewerPage(
@@ -123,10 +124,10 @@ class XlsxViewerScreen extends ConsumerWidget {
         workbook: c.workbook,
         truncated: c.truncated,
       ),
-      loading: () => _LoadScaffold(path: path, category: DocCategory.xls),
+      loading: () => _LoadScaffold(path: path, category: category),
       error: (e, _) => _LoadScaffold(
         path: path,
-        category: DocCategory.xls,
+        category: category,
         body: _error(
           context,
           e,

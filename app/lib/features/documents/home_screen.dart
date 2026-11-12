@@ -14,12 +14,13 @@ import 'widgets/document_list.dart';
 import 'widgets/home_drawer.dart';
 import 'widgets/sort_menu.dart';
 
-/// Thứ tự tab Tập tin: Tất cả · PDF · DOC · XLS · PPT · TXT (`null` = Tất cả).
+/// Thứ tự tab Tập tin: Tất cả · PDF · DOC · XLS · CSV · PPT · TXT (`null` = Tất cả).
 const List<DocCategory?> homeTabs = [
   null,
   DocCategory.pdf,
   DocCategory.doc,
   DocCategory.xls,
+  DocCategory.csv,
   DocCategory.ppt,
   DocCategory.txt,
 ];
@@ -198,7 +199,7 @@ class _FilesHeader extends StatelessWidget {
       ],
     );
 
-    final labels = [l.docs_tabAll, 'PDF', 'DOC', 'XLS', 'PPT', 'TXT'];
+    final labels = [l.docs_tabAll, 'PDF', 'DOC', 'XLS', 'CSV', 'PPT', 'TXT'];
     Widget pills(EdgeInsets padding) => SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: padding,

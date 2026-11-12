@@ -51,6 +51,10 @@ class _XlsxViewerPageState extends State<XlsxViewerPage> {
   int _index = 0;
   double _zoom = 1;
 
+  /// CSV có tab + màu riêng (vàng); XLSX giữ màu xanh.
+  late final DocCategory _category =
+      docTypeFromPath(widget.path).category ?? DocCategory.xls;
+
   final _searchCtrl = TextEditingController();
   bool _searching = false;
   List<XlsxHit> _hits = const [];
@@ -189,7 +193,7 @@ class _XlsxViewerPageState extends State<XlsxViewerPage> {
     final isCsv = docTypeFromPath(widget.path) == DocType.csv;
     return Scaffold(
       appBar: OfficeViewerAppBar(
-        category: DocCategory.xls,
+        category: _category,
         title: p.basename(widget.path),
         actions: [
           IconButton(
@@ -225,7 +229,7 @@ class _XlsxViewerPageState extends State<XlsxViewerPage> {
               children: [
                 if (_searching)
                   OfficeSearchBar(
-                    category: DocCategory.xls,
+                    category: _category,
                     controller: _searchCtrl,
                     onChanged: _onQuery,
                     current: _hits.isEmpty ? 0 : _current + 1,
@@ -258,6 +262,7 @@ class _XlsxViewerPageState extends State<XlsxViewerPage> {
                 _SheetTabs(
                   names: [for (final s in _sheets) s.name],
                   selected: _index,
+                  accent: officeHeaderColor(_category),
                   onSelected: (i) => setState(() {
                     _index = i;
                     _refreshMatchSet();
@@ -269,23 +274,24 @@ class _XlsxViewerPageState extends State<XlsxViewerPage> {
   }
 }
 
-/// Thanh tab sheet ở đáy: viên cao 32 cuộn ngang; tab chọn = nền màu XLS chữ trắng,
-/// chưa chọn = nền `surface2`.
+/// Thanh tab sheet ở đáy: viên cao 32 cuộn ngang; tab chọn = nền màu loại file
+/// (xanh cho XLSX, vàng cho CSV), chưa chọn = nền `surface2`.
 class _SheetTabs extends StatelessWidget {
   const _SheetTabs({
     required this.names,
     required this.selected,
+    required this.accent,
     required this.onSelected,
   });
 
   final List<String> names;
   final int selected;
+  final Color accent;
   final ValueChanged<int> onSelected;
 
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
-    final accent = officeHeaderColor(DocCategory.xls);
     return OfficeBottomBar(
       child: SizedBox(
         height: 48,
